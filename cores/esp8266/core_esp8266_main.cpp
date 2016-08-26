@@ -152,7 +152,6 @@ void init_done() {
     esp_schedule();
 }
 
-
 extern "C" void user_init(void) {
     struct rst_info *rtc_info_ptr = system_get_rst_info();
     memcpy((void *) &resetInfo, (void *) rtc_info_ptr, sizeof(resetInfo));
