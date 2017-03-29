@@ -98,7 +98,7 @@ public:
 	typedef std::function<void(int)> THandlerFunction_Error;
 	typedef std::function<void(int)> THandlerFunction_PubSub;
 	typedef std::function<void(String, String, bool)> THandlerFunction_Data;
-	typedef std::function<bool(WiFiClientSecure& client, String host)> THandlerFunction_Secure;
+	typedef std::function<bool(WiFiClientSecure *client, String host)> THandlerFunction_Secure;
 
 	MQTTClient();
 	~MQTTClient();

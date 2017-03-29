@@ -142,12 +142,14 @@ bool MQTTClient::begin(String uri, LwtOptions lwt, int keepalive, bool clean_ses
     _transportTraits.reset(nullptr);
 
 
-    if(_scheme == "mqtt") {
+    if(_scheme == "mqtt" || _scheme == "mqtts") {
         _transportTraits = MQTTTransportTraitsPtr(new MQTTTransportTraits());
     } else if(_scheme == "mqtts") {
-        _transportTraits = MQTTTransportTraitsPtr(new MQTTTLSTraits());
+        _transportTraits = MQTTTransportTraitsPtr(new MQTTTransportTraits(true));
     } else if(_scheme == "ws") {
         _transportTraits = MQTTTransportTraitsPtr(new MQTTWSTraits());
+    } else if(_scheme == "wss") {
+        _transportTraits = MQTTTransportTraitsPtr(new MQTTWSTraits(true));
     }
     else {
         free(_state.out_buffer);
@@ -196,7 +198,8 @@ bool MQTTClient::connect(void)
 
     if(_secure_cb && (_scheme == "wss" || _scheme == "mqtts")) {
         LOG("[MQTT-Client] begin verifying %s:%u\n", _host.c_str(), _port);
-        auto wcs = reinterpret_cast<WiFiClientSecure&>(*_tcp);
+        // auto wcs = reinterpret_cast<WiFiClientSecure&>(*_tcp);
+        WiFiClientSecure *wcs = (WiFiClientSecure*) _tcp.get();
         if(!_secure_cb(wcs, _host)) {
             _tcp->stop();
             LOG("[MQTT-Client] failed verify to %s:%u\n", _host.c_str(), _port);

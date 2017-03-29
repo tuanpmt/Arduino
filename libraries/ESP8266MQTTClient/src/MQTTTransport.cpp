@@ -29,66 +29,53 @@ License (MIT license):
 #include "ESP8266MQTTClient.h"
 #include "MQTTTransport.h"
 
-MQTTTransportTraits::~MQTTTransportTraits()
+MQTTTransportTraits::MQTTTransportTraits(): _isSecure(false)
 {
 }
-
+MQTTTransportTraits::MQTTTransportTraits(bool secure): _isSecure(secure)
+{
+}
 std::unique_ptr<WiFiClient> MQTTTransportTraits::create()
 {
+	if(_isSecure)
+		return std::unique_ptr<WiFiClient>(new WiFiClientSecure());
 	return std::unique_ptr<WiFiClient>(new WiFiClient());
 }
 bool MQTTTransportTraits::connect(WiFiClient* client, const char* host, int port)
 {
+	if(_isSecure) {
+		WiFiClientSecure *client = (WiFiClientSecure*) client;
+	}
 	return client->connect(host, port);
 }
 int MQTTTransportTraits::write(WiFiClient* client, unsigned char *data, int size)
 {
+	if(_isSecure) {
+		WiFiClientSecure *client = (WiFiClientSecure*) client;
+	}
 	return client->write(data, size);
 }
 int MQTTTransportTraits::read(WiFiClient* client, unsigned char *data, int size)
 {
+	if(_isSecure) {
+		WiFiClientSecure *client = (WiFiClientSecure*) client;
+	}
 	return client->read(data, size);
 }
-/**
- * MQTT Over TLS
- */
-MQTTTLSTraits::MQTTTLSTraits()
-{
-}
 
-std::unique_ptr<WiFiClient> MQTTTLSTraits::create()
-{
-	return std::unique_ptr<WiFiClient>(new WiFiClientSecure());
-}
-
-bool MQTTTLSTraits::connect(WiFiClient* client, const char* host, int port)
-{
-	WiFiClientSecure *wcs = (WiFiClientSecure*) client;
-	return wcs->connect(host, port);
-}
-int MQTTTLSTraits::write(WiFiClient* client, unsigned char *data, int size)
-{
-	WiFiClientSecure *wcs = (WiFiClientSecure*) client;
-	return wcs->write(data, size);
-}
-int MQTTTLSTraits::read(WiFiClient* client, unsigned char *data, int size)
-{
-	WiFiClientSecure *wcs = (WiFiClientSecure*) client;
-	return wcs->read(data, size);
-}
 /**
  * MQTT Over WS
  */
 
-MQTTWSTraits::MQTTWSTraits()
+MQTTWSTraits::MQTTWSTraits(): _isSecure(false)
+{
+	randomSeed(RANDOM_REG32);
+}
+MQTTWSTraits::MQTTWSTraits(bool secure): _isSecure(secure)
 {
 	randomSeed(RANDOM_REG32);
 }
 
-std::unique_ptr<WiFiClient> MQTTWSTraits::create()
-{
-	return std::unique_ptr<WiFiClient>(new WiFiClient());
-}
 
 bool MQTTWSTraits::connect(WiFiClient* client, const char* host, int port)
 {

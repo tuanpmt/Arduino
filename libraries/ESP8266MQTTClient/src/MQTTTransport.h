@@ -17,34 +17,27 @@
 class MQTTTransportTraits
 {
 public:
-    virtual ~MQTTTransportTraits();
+    MQTTTransportTraits();
+    MQTTTransportTraits(bool secure);
     virtual std::unique_ptr<WiFiClient> create();
     virtual bool connect(WiFiClient* client, const char* host, int port);
     virtual int write(WiFiClient* client, unsigned char *data, int size);
     virtual int read(WiFiClient* client, unsigned char *data, int size);
 protected:
     std::unique_ptr<WiFiClient> _tcp;
-};
-
-class MQTTTLSTraits : public MQTTTransportTraits
-{
-public:
-    MQTTTLSTraits();
-    std::unique_ptr<WiFiClient> create() override;
-    bool connect(WiFiClient* client, const char* host, int port) override;
-    int write(WiFiClient* client, unsigned char *data, int size) override;
-    int read(WiFiClient* client, unsigned char *data, int size) override;
+    bool _isSecure;
 };
 
 class MQTTWSTraits : public MQTTTransportTraits
 {
 public:
     MQTTWSTraits();
-    std::unique_ptr<WiFiClient> create() override;
+    MQTTWSTraits(bool secure);
     bool connect(WiFiClient* client, const char* host, int port) override;
     int write(WiFiClient* client, unsigned char *data, int size) override;
     int read(WiFiClient* client, unsigned char *data, int size) override;
 protected:
     String _key;
+    bool _isSecure;
 };
 #endif

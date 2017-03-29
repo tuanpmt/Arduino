@@ -14,9 +14,9 @@ void setup() {
 
     configTime(3 * 3600, 0, "pool.ntp.org", "time.nist.gov");
 
-    mqtt.onSecure([](WiFiClientSecure & client, String host) {
+    mqtt.onSecure([](WiFiClientSecure *client, String host) {
         Serial.printf("Verify: %s\r\n", host.c_str());
-        return client.verify(fingerprint.c_str(), host.c_str());
+        return client->verify(fingerprint.c_str(), host.c_str());
     });
     
     //topic, data, data is continuing
